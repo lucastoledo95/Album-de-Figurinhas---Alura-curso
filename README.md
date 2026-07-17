@@ -1,114 +1,141 @@
 # 📖 Alura Album - Copa do Mundo Tech
 
-Álbum de Figurinhas Digital Interativo com a temática **"Copa do Mundo Tech"**. O projeto é um tributo interativo à história e evolução do desenvolvimento de software, reunindo mentes nacionais e internacionais que moldam o futuro da tecnologia.
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 
-O álbum simula um livro físico com animação realista de virada de páginas (3D), efeitos sonoros sintetizados via **Web Audio API** e integração dinâmica com uma **API FastAPI** para carregamento das figurinhas.
+Álbum de Figurinhas Digital Interativo com a temática **"Copa do Mundo Tech"**. Este projeto é um tributo interativo à história e evolução do desenvolvimento de software, reunindo mentes brilhantes nacionais e internacionais que moldam o futuro da tecnologia. 
+
+Desenvolvido como um projeto **Full Stack**, o álbum simula a experiência física de folhear um livro com animação realista em 3D, efeitos sonoros sintetizados via **Web Audio API** e integração dinâmica com uma **API REST FastAPI** em Python.
 
 ---
 
-## 🎯 Objetivo
+## 💡 Diferenciais & Destaques Técnicos
 
-Construir uma interface web moderna, fluida e interativa de um álbum de figurinhas. O projeto demonstra a integração entre um **frontend** (manipulação de DOM, bibliotecas de terceiros para efeitos visuais e síntese sonora) e um **backend** que disponibiliza dinamicamente os dados das figurinhas que preenchem os slots do álbum.
+Este projeto foi projetado com foco em boas práticas de arquitetura, otimização de performance e excelente experiência do usuário (UX/UI). Ele se destaca por:
+*   **Arquitetura Clean e Desacoplada:** Separação clara de responsabilidades entre o Backend (API REST) e Frontend (Client Estático).
+*   **Manipulação Avançada de DOM e Web APIs:** Uso de JavaScript Vanilla moderno sem frameworks pesados, demonstrando domínio das APIs nativas do navegador (Fetch API, Web Audio API, seletores, manipulação de classes dinâmicas).
+*   **Física e Animações em CSS:** Criação de interfaces responsivas de altíssima fidelidade visual, com sombras realistas de lombada, transições Snappy, cursores de arrasto personalizados e efeitos de *glitch* em tempo real.
+*   **Desenvolvimento de APIs Modernas:** Construção de rotas performáticas em Python utilizando FastAPI, validação estática de tipos, tratamento de erros HTTP e estruturação automática de documentação OpenAPI.
+*   **Integração Assíncrona:** Gerenciamento eficiente de requisições paralelas e tratamento de estados (carregamento de imagem com sucesso vs falha de rede).
 
 ---
 
 ## 📁 Estrutura do Projeto
 
-```
+```text
 .
-├── backend/                 # API FastAPI (servidor de dados)
-│   ├── main.py              # Aplicação FastAPI com rotas de figurinhas
-│   ├── __pycache__/         # Cache de bytecode Python
-│   └── .venv/               # Ambiente virtual (FastAPI, Uvicorn, etc.)
-├── frontend/                # Interface estática do álbum
-│   ├── index.html           # Estrutura semântica e conteúdo do álbum
-│   ├── style.css            # Estilização, tema visual e animações
-│   └── app.js               # Lógica, interações, áudio e integração com a API
-└── README.md
+├── backend/                   # Backend em Python (FastAPI)
+│   ├── main.py                # Servidor API REST, middlewares CORS e endpoints
+│   ├── figurinhas/            # Repositório de imagens das figurinhas (01-30)
+│   └── .venv/                 # Ambiente virtual contendo as dependências
+├── frontend/                  # Frontend Estático (Client)
+│   ├── index.html             # Estrutura semântica do álbum e slots
+│   ├── style.css              # Design System (variáveis), animações e responsividade
+│   └── app.js                 # Lógica de negócio, síntese de áudio e fetch à API
+└── README.md                  # Documentação do projeto
 ```
 
-As dependências do backend (FastAPI, Uvicorn, Starlette, Pydantic) estão instaladas no ambiente virtual `.venv`.
+---
+
+## ⚙️ Backend (Python + FastAPI)
+
+O backend é construído em **FastAPI**, um framework Python moderno, de alta performance (baseado em Starlette e Pydantic) e com tipagem estática que facilita o desenvolvimento rápido de APIs seguras.
+
+### Principais Características do Backend:
+1.  **Segurança e CORS Habilitado (Cross-Origin Resource Sharing):**
+    O backend possui configuração explícita de políticas de CORS por meio do middleware `CORSMiddleware` do FastAPI. Isso é indispensável em uma arquitetura Full Stack desacoplada, garantindo que o frontend (rodando em servidores de desenvolvimento locais como Live Server, ou servidores HTTP nativos como `http://localhost:3000`, e até mesmo via protocolo local `file://`) possa se comunicar e fazer requisições assíncronas à API (rodando em `http://localhost:8000`) sem sofrer bloqueios pelas políticas restritivas de mesma origem (*Same-Origin Policy*) impostas pelos navegadores.
+    *   **Configuração de Segurança:** Foram liberadas todas as origens (`["*"]`), métodos HTTP (`["*"]`) e cabeçalhos customizados (`["*"]`) para facilitar a testabilidade local e integrações rápidas do ecossistema.
+2.  **Resolução Dinâmica de Arquivos:** Uso de `glob` e manipulação de caminhos absolutos do sistema de arquivos para encontrar imagens com base no padrão numérico de ID (ex: `01-alan-turing.jpg`), permitindo compatibilidade imediata com extensões diversas (`.jpg`, `.jpeg`, `.png`, `.webp`, `.avif`).
+3.  **Entrega Eficiente de Mídia:** Uso de `FileResponse` da Starlette para realizar streaming otimizado dos arquivos de imagem diretamente ao cliente.
+
+### Endpoints Disponíveis:
+*   `GET /` — Endpoint de integridade física da API (Health Check / Boas-vindas).
+*   `GET /figurinhas` — Retorna uma lista em formato JSON com todas as 30 figurinhas catalogadas, contendo: `id`, `nome`, `categoria` e o `imagem_url`.
+*   `GET /figurinhas/{id}` — Busca os detalhes técnicos de uma única figurinha pelo seu ID correspondente (retorna `404` se o ID for inválido).
+*   `GET /figurinhas/{id}/imagem` — Busca a imagem física da figurinha no sistema de arquivos do servidor.
+*   `GET /total` — Retorna estatísticas em tempo real sobre o progresso do álbum: total de slots, figurinhas coladas (existentes) e quantidade restante para completar.
+
+### 🌐 Documentação Interativa Automática (`/docs`)
+
+Uma das maiores vantagens em utilizar o FastAPI é a geração automática de especificações OpenAPI. Ao rodar o backend, duas rotas de documentação são expostas nativamente:
+
+*   **Swagger UI (`/docs`):** Permite visualizar de forma gráfica e interativa todos os endpoints da API. A partir dela, **qualquer pessoa pode testar os endpoints diretamente no navegador**, clicando no botão **"Try it out"** e inspecionando os payloads de resposta em tempo real, sem necessidade de ferramentas externas como Postman ou Insomnia.
+*   **ReDoc (`/redoc`):** Uma visualização alternativa focada em documentação legível e detalhada de schemas, excelente para integração de times.
 
 ---
 
-## 🧩 Funcionalidade dos Arquivos
+## 🎨 Frontend (HTML5, CSS Vanilla, JavaScript)
 
-### 1. 📄 `frontend/index.html`
-Define a estrutura e o conteúdo semântico do álbum.
-- **Capa e Contracapa:** Páginas especiais com selos, títulos com efeito *glitch* e código de barras simulado.
-- **Páginas internas:** Agrupadas por categorias, com 5 slots numerados (`#01` a `#30`):
-  - **Pág. 1 — IA:** Alan Turing, John McCarthy, Sam Altman, Geoffrey Hinton, Yann LeCun.
-  - **Pág. 2 — Python:** Guido van Rossum, Tim Peters, Raymond Hettinger, Travis Oliphant, Wes McKinney.
-  - **Pág. 3 — Banco de Dados:** Edgar F. Codd, Larry Ellison, Michael Widenius, Salvatore Sanfilippo, Eliot Horowitz.
-  - **Pág. 4 — Sistemas Operacionais:** Linus Torvalds, Dennis Ritchie, Richard Stallman, Bill Gates, Steve Jobs.
-  - **Pág. 5 & 6 — Brasil (Vol. 1 & 2):** Paulo Silveira, Guilherme Silveira, Gustavo Guanabara, Maurício Aniche, Andre David, Guilherme Lima, Gi Space Coding, Vinicius Neves, Rafaela Ballerini e "Você" (slot interativo).
-- **Controles:** Botões de navegação lateral (anterior/próxima) e botão de alternar áudio.
-- **Integrações:** Google Fonts (`Inter`, `Outfit`) e biblioteca `PageFlip` via CDN.
+O frontend foi desenvolvido utilizando tecnologias nativas da Web para demonstrar forte domínio em engenharia de client-side.
 
-### 2. 🎨 `frontend/style.css`
-Responsável por toda a identidade visual, layout e animações.
-- **Identidade visual:** Paleta tecnológica com variáveis CSS (azul espacial, azul profundo, branco neve, preto novo) e detalhes neon.
-- **Realismo:** Sombras na lombada central (`.page-content::after`) para dar profundidade de livro aberto.
-- **Layout responsivo:** Grids e Flexbox; cursores `grab`/`grabbing` indicando que a página pode ser arrastada.
-- **Micro-interações:** Hover nos botões, brilho nos slots especiais, glitch na capa e animação de "colar" figurinha (`.sticker-aparecer`).
-- **Responsividade:** Breakpoints em `1200px` e `768px` para adaptação a tablets e mobile.
-
-### 3. ⚡ `frontend/app.js`
-Controla o comportamento dinâmico, interações e áudio.
-- **Integração com a API:** Requisições assíncronas (`fetch`) para `http://localhost:8000/figurinhas`, montando um `Map` de `id → figurinha` e preenchendo os slots correspondentes (`#01` a `#30`) com imagens dinâmicas quando disponíveis.
-- **Inicialização do PageFlip:** Configura `St.PageFlip` (dimensões, sombras, suporte mobile e tempo de transição de `800ms`).
-- **Arraste customizado:** Substitui o clique/arraste padrão da biblioteca por um algoritmo que exige um limiar de movimento (evitando viradas acidentais).
-- **Síntese sonora (Web Audio API):** Gera proceduralmente o som de "papel virando" em tempo real (ruído branco + filtros *bandpass* e *lowpass*), sem arquivos de áudio externos.
-- **Controles:** Botões de navegação, mute/unmute e suporte a setas do teclado (←/→).
-
-### 4. 🐍 `backend/main.py`
-API FastAPI que simula um banco de dados em memória.
-- `GET /` → Mensagem de boas-vindas (`{"mensagem": "Olá, mundo! 🌍"}`).
-- `GET /figurinhas` → Lista completa de figurinhas (id, nome, categoria).
-- `GET /figurinhas/{figurinha_id}` → Busca por id; retorna `404` se não encontrada.
-
-O frontend consome essa API para preencher os slots do álbum dinamicamente.
+### Principais Funcionalidades do Frontend:
+1.  **Visual Premium & Design System:** Interface customizada baseada em variáveis CSS com temática neon espacial (`--color-blue-universe`, `--color-dev-blue`, etc.), fontes modernas carregadas via Google Fonts (`Outfit` e `Inter`) e sombras realistas para lombada central que mudam de acordo com o lado da página aberta.
+2.  **Animação 3D com PageFlip:** Utilização da biblioteca `St.PageFlip` de alto desempenho para transições realistas de dobras de página.
+3.  **Preenchimento Dinâmico via API:** Conexão assíncrona inteligente. O script `app.js` realiza o `fetch` para `/figurinhas`, processa os dados usando a estrutura de dados `Map` para otimização de busca $O(1)$ e popula automaticamente os slots dinâmicos `#01` a `#30` no DOM.
+4.  **Colagem Suave (UX):** As figurinhas coladas são reveladas através de uma animação suave de fade-in e scale (`@keyframes sticker-aparecer`), simulando a aplicação da figurinha física ao papel.
+5.  **Física de Gestos Aperfeiçoada:** Implementação de um manipulador de eventos personalizado para os gestos de arrasto (com mouse ou touch), exigindo um limite de movimento de pelo menos `10px` para iniciar a virada da página, eliminando disparos acidentais comuns de cliques estáticos.
+6.  **Síntese Sonora Procedural (Web Audio API):**
+    *   **Inovação Técnica:** O som realista de papel sendo folheado é gerado **100% via código e matemática**, sem carregar arquivos MP3 ou WAV pesados.
+    *   **Como funciona:** Um oscilador gera ruído branco em tempo real, que passa por um filtro passabanda (`bandpass`) com sweep dinâmico de frequência que cai de `1500Hz` a `350Hz` (simulando a acústica da página se movimentando no ar) e por um filtro passabaixas (`lowpass`) para atenuar ruídos estridentes artificiais.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
-
-- **HTML5** — Estrutura semântica de páginas e slots.
-- **CSS3** — CSS Vanilla com variáveis e animações.
-- **JavaScript (ES6+)** — Lógica interativa do álbum.
-- **PageFlip (St.PageFlip)** — Motor de animação 3D de páginas de livro (via CDN).
-- **Web Audio API** — Síntese de som digital em tempo real.
-- **FastAPI / Python** — Backend de dados (porta `8000`).
-
----
-
-## 🚀 Como Executar
+## 🚀 Como Rodar o Projeto Localmente
 
 ### Pré-requisitos
-- Python 3.10+ (o `.venv` atual foi gerado com Python 3.14).
-- Navegador moderno (Chrome, Edge, Firefox).
+*   **Python 3.10+** instalado em sua máquina.
+*   Um navegador web moderno com suporte a Web Audio API.
 
-### 1. Frontend Estático (modo offline)
-Basta abrir `frontend/index.html` no navegador ou usar uma extensão de servidor local (ex.: *Live Server* do VS Code). Nesse modo, o álbum exibe os slots com os nomes dos desenvolvedores.
-
-### 2. Backend (API FastAPI)
-Em um terminal, ative o ambiente virtual e inicie o servidor:
+### Passo 1: Executando o Backend (API)
+Abra o seu terminal na pasta raiz do projeto e execute os seguintes comandos:
 
 ```bash
+# Navegar até a pasta backend
 cd backend
-.\.venv\Scripts\Activate.ps1   # Windows (PowerShell)
-# source .venv/bin/activate    # Linux/macOS
 
+# Criar um ambiente virtual (caso não exista)
+python -m venv .venv
+
+# Ativar o ambiente virtual
+# No Windows (PowerShell):
+.\.venv\Scripts\Activate.ps1
+# No Linux/macOS:
+source .venv/bin/activate
+
+# Instalar as dependências do projeto
+pip install fastapi uvicorn
+
+# Iniciar o servidor de desenvolvimento
 uvicorn main:app --reload
 ```
 
-A API estará disponível em `http://localhost:8000`. Documentação interativa automática em `http://localhost:8000/docs`.
+O backend iniciará na porta padrão `http://localhost:8000`.
 
-### 3. Frontend + Backend (modo completo)
-Com o backend rodando na porta `8000`, abra o `frontend/index.html`. O `app.js` buscará `http://localhost:8000/figurinhas` e preencherá os slots automaticamente.
+*   Para acessar a documentação interativa da API, vá para: **`http://localhost:8000/docs`**
+
+### Passo 2: Executando o Frontend
+Com o backend rodando ativamente na porta `8000`, basta abrir o arquivo `frontend/index.html` em qualquer navegador.
+*   **Recomendação:** Para evitar problemas de CORS em alguns navegadores rígidos ao abrir arquivos locais via protocolo `file://`, execute o frontend utilizando um servidor local simples, como a extensão **Live Server** do VS Code ou usando o utilitário nativo de Python em um novo terminal:
+
+```bash
+# Executar a partir da pasta frontend
+cd frontend
+python -m http.server 3000
+```
+Acesse no navegador: `http://localhost:3000`
 
 ---
 
-## 📄 Licença
+## 📚 Categorias do Álbum
+*   **IA (Pág. 1):** Slot `#01` ao `#05` (Alan Turing, John McCarthy, Sam Altman, Geoffrey Hinton, Yann LeCun).
+*   **Python (Pág. 2):** Slot `#06` ao `#10` (Guido van Rossum, Tim Peters, Raymond Hettinger, Travis Oliphant, Wes McKinney).
+*   **Banco de Dados (Pág. 3):** Slot `#11` ao `#15` (Edgar F. Codd, Larry Ellison, Michael Widenius, Salvatore Sanfilippo, Eliot Horowitz).
+*   **Sistemas Operacionais (Pág. 4):** Slot `#16` ao `#20` (Linus Torvalds, Dennis Ritchie, Richard Stallman, Bill Gates, Steve Jobs).
+*   **Brasil - Vol. 1 & 2 (Pág. 5 & 6):** Slot `#21` ao `#30` (Lideranças e educadores tech do país: Paulo Silveira, Guilherme Silveira, Gustavo Guanabara, Maurício Aniche, Andre David, Guilherme Lima, Gi Space Coding, Vinicius Neves, Rafaela Ballerini, e uma surpresa no slot `#30`).
 
-Projeto desenvolvido como material de estudo da **Imersão Alura** (Julho/2026). Uso educacional.
+---
+
+Desenvolvido para fins didáticos e demonstração de engenharia de software Full Stack. Sinta-se à vontade para explorar os códigos ou testar a API!
