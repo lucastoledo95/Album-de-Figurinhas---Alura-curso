@@ -10,6 +10,8 @@
 
 Desenvolvido como um projeto **Full Stack**, o álbum simula a experiência física de folhear um livro com animação realista em 3D, efeitos sonoros sintetizados via **Web Audio API** e integração dinâmica com uma **API REST FastAPI** em Python.
 
+![Demonstração do Álbum de Figurinhas](apresentacao.gif)
+
 ---
 
 ## 💡 Diferenciais & Destaques Técnicos
